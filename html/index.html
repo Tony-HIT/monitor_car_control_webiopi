@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>WebIOPi | Light Control</title>
+        <link type="text/css" href="index.css" charset="utf-8" rel="stylesheet">
+        
+        <script type="text/javascript" src="/webiopi.js"></script>
+        <script type="text/javascript">
+        webiopi().ready(function() {
+				delay_time=0.03
+				accel_time=0.05
+				slow_time=0.01
+				
+                
+                // Create a button to call forward macro
+                var forwardBtn = webiopi().createButton("forwardBtn", "forward", function() { //id, label, callback
+                    // Call the macro
+                    webiopi().callMacro("forward", delay_time);
+                });
+
+                var reverseBtn = webiopi().createButton("reverseBtn", "reverse", function() {
+                    webiopi().callMacro("reverse", delay_time);
+                });
+                
+                var leftBtn = webiopi().createButton("leftBtn", "left", function() {
+                    webiopi().callMacro("turn_left", delay_time);
+                });
+                
+                var rightBtn = webiopi().createButton("rightBtn", "right", function() {
+                    webiopi().callMacro("turn_right", delay_time);
+                });
+                
+                var stopBtn = webiopi().createButton("stopBtn", "stop", function() { 
+                    // Call the macro
+                    webiopi().callMacro("stop", []);
+                });
+                
+                // Append the button to the controls box using a jQuery function
+                $("#controls").append(forwardBtn);
+                $("#controls").append(reverseBtn);
+                $("#controls").append(leftBtn);
+                $("#controls").append(rightBtn);
+                $("#controls").append(stopBtn);
+                
+                
+                
+                // Refresh GPIO buttons
+                // pass true to refresh repeatedly of false to refresh once
+                webiopi().refreshGPIO(true);
+        });
+                
+        </script>
+</head>
+<body>
+<div>
+<h2>Remote Control By webio-lemaker</h2>
+<div id="controls"></div>
+</div>
+</body>
+</html>
+
