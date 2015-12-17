@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0014)about:internet -->
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"> 
+   <head>
+	<meta charset="utf-8"/>
+	<title>RTMPPlayer</title>
+	<meta name="description" content="" />
+	
+	<script src="js/swfobject.js"></script>
+	<script src="http://code.jquery.com/jquery-1.8.0.js"></script>
+	<script>
+		var flashvars = {
+		};
+		var params = {
+			menu: "false",
+			scale: "noScale",
+			allowFullscreen: "true",
+			allowScriptAccess: "always",
+			bgcolor: "0x000000",
+			wmode: "direct"
+		};
+		var attributes = {
+			id:"InterPlayer"
+		};
+		swfobject.embedSWF(
+			"InterPlayer.swf", 
+			"altContent", "600", "450", "10.0.0", 
+			"expressInstall.swf", 
+			flashvars, params, attributes);
+		function gethost(){
+              var url = document.location.host;
+              var urll = "http://"+url+":8080/index.html";
+              var c = document.getElementById("myIframe").src=urll;
+		}
+	</script>
+	<style type="text/css">
+		*{ 
+			margin:0; 
+			padding:0;
+		}
+		input.label {
+			width:100px;
+			height:20px;
+			border:0;
+		}
+		div{
+			position:absolute;
+		}
+		input.dynamic {
+			position:absolute;
+			width:495px;
+			height:20px;
+		}
+		iframe.myIFrame {
+                        position:relative;
+                        width:600px;
+                        height:400px;
+                }
+	</style>
+</head>
+<body onload="gethost()">
+	
+	<div style="top:30px;left:30px;background-color:#666;">
+		<div id="altContent">
+			<h1>InterPlayer</h1>
+			<p><a href="http://www.adobe.com/go/getflashplayer">Get Adobe Flash player</a></p>
+		</div>
+		<div style="top:460px;">
+			<input class="label" type="text" value="Player Type " readonly="true" />
+			<select id="select">
+				<option value="" >Please Select...</option>
+				<option value="http">HTTP Player</option>
+				<option value="rtmp">RTMP Player</option>
+			</select>
+		</div>
+		<div id="videoModel" style="top:510px;display:none;"></div>
+		
+		<div style="top:570px;left:550px;">
+			<input id="surebtn" type="button" value="Enter" style="width:50px;height:25px;"/>
+		</div>
+	</div>
+
+	<div style="top:30px;left:650px;width:650px;height:850px;overflow:auto;">
+	<div id="log" style="top:30px;left:25px;width:600px;height:200px;border:1px solid #000;overflow:auto;font-size:12px;position:relative"></div>
+	
+
+      <iframe style="top:20px;left:25px"
+                id="myIframe" class ="myIFrame" src="car_control/index.html"
+                frameborder="0" scrolling="no" marginheight="0" marginwidth="0">
+        </iframe>
+
+	</div>
+
+
+
+	<div style="top:630px;left:30px;color:#333;font-size:12px;">Comment：This player is just for testing.</div>
+	
+	<script language="javascript">
+		var _logtxt = '';
+		var $value = "";
+		
+		$('#select').live('change',function(ev){
+			
+			$value = this.options[this.options.selectedIndex].value;
+			
+			var $firstlabelValue = ($value=='http')?'Chanel GUID：':'RTMP Address ';
+			var $secondlabelValue = ($value=='http')?'CDN IP：':'FileName ';
+			
+			$('#videoModel').css('display',($value!='')?'block':'none');
+			
+			if ($value!=''){
+				$('#videoModel').html(setHtml($value,$firstlabelValue,$secondlabelValue));
+			} else {
+				$('#videoModel').empty();
+			}
+		});
+		//http
+		//2659025d519e4162b19551a80bb4b4bb
+		//122.225.69.253:80
+		
+		//rtmp
+		//rtmp://multimedia.whbc.com.cn:1935/live/
+		//whtv7
+		
+		function setHtml(id,first,second){
+			var $html = [];
+			$html.push('<div>');
+			$html.push('<input class="label" type="text" value="'+first+'" readOnly="true" />');
+			if (first == "RTMP Address ") {
+				var host = "rtmp://"+document.location.host+":1936/publish";
+				 
+				$html.push('<input class="dynamic" id="'+id+'Type" type="text" value="'+host+'" />');
+
+			}else
+			    $html.push('<input class="dynamic" id="'+id+'Type" type="text" value="" />');
+			$html.push('</div>');
+			$html.push('<div style="top:30px;">');
+			$html.push('<input class="label" type="text" value="'+second+'" readOnly="true" />');
+			$html.push('<input class="dynamic" id="'+id+'Name" type="text" value="" />');
+			$html.push('</div>');
+			return $html.join('');
+		}
+		
+		$('#surebtn').live('click',function(ev){
+			if ($value == ""){
+				alert('Please select the player type！！');
+				return;
+			} else if ($value == "http" && ($('#httpType').attr('value') == '' || $('#httpName').attr('value') == '')){
+				alert('Please fill in Chanel GUID and CDN IP ！！');
+				return;
+			} else if ($value == "rtmp" && ($('#rtmpType').attr('value') == '' || $('#rtmpName').attr('value') == '')){
+				alert('Please fill in the full RTMP address and fileName ！！');
+				return;
+			}
+			
+			_logtxt = '';
+			
+			var $value_1 = $('#'+$value+'Type').attr('value');
+			var $value_2 = $('#'+$value+'Name').attr('value');
+			
+			var $swf = swfobject.getObjectById("InterPlayer");
+			$swf.init($value_1,$value_2,$value);
+		});
+		
+		function debug(str){
+			_logtxt += str + "<br/>";
+			$('#log').html(_logtxt);
+			$('#log').scrollTop($('#log')[0].scrollHeight);
+		}
+	</script>
+
+	
+</body>
+</html>
